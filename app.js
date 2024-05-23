@@ -1,15 +1,13 @@
-import express from 'express';
-
-import { sequelize } from './api_models';
+const express = require('express')
+const { sequelize } = require('./api_models')
 
 require('dotenv').config()
 
-try {
-	await sequelize.authenticate();
+const dbConnection = sequelize.authenticate();
+
+dbConnection.then(result => {
 	console.log('DB Connection has been established successfully.');
-} catch (error) {
-	console.error('Unable to connect to the database:', error);
-}
+})
 
 const app = express();
 
@@ -19,7 +17,13 @@ app.use("*", (req, res, next) => {
 	next();
 })
 
-app.use("/api", require('./api/routes/index'));
+app.use("/api", (req, res) => {
+	res.send('hello world');
+});
+
+app.use("*", (req, res) => {
+	res.send('404 error');
+})
 
 app.listen(3000, () => {
 	console.log("Server running on port 3000");
